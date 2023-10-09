@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+	<name>grouponnode</name>
+	<displayName><![CDATA[GrouponNode]]></displayName>
+	<version><![CDATA[1.0.0]]></version>
+	<description><![CDATA[Connect your e-commerce to Groupon]]></description>
+	<author><![CDATA[Renato Milano]]></author>
+	<tab><![CDATA[administration]]></tab>
+	<is_configurable>1</is_configurable>
+	<need_instance>1</need_instance>
+</module>
