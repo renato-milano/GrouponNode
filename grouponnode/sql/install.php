@@ -25,10 +25,10 @@
 */
 $sql = array();
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'grouponnode` (
+$sql[] = 'CREATE TABLE IF NOT EXISTS `grouponnode` (
     `id_grouponnode` int(11) NOT NULL AUTO_INCREMENT,
-    token varchar(255),
-    supplier_id varchar(255),
+    orderID varchar(255),
+    lineitem varchar(255),
     PRIMARY KEY  (`id_grouponnode`)
 ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 

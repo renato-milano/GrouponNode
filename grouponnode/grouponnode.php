@@ -23,6 +23,7 @@
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
+require_once dirname(__FILE__).'/controllers/GrouponUtility.php';
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -39,6 +40,7 @@ class GrouponNode extends Module
         $this->version = '1.0.0';
         $this->author = 'Renato Milano';
         $this->need_instance = 1;
+        require_once dirname(__FILE__).'/controllers/GrouponUtility.php';
 
         /**
          * Set $this->bootstrap to true if your module is compliant with bootstrap (PrestaShop 1.6)
@@ -65,7 +67,8 @@ class GrouponNode extends Module
 
         return parent::install() &&
             $this->registerHook('header') &&
-            $this->registerHook('displayBackOfficeHeader');
+            $this->registerHook('displayBackOfficeHeader')&&
+            $this->registerHook('actionOrderStatusPostUpdate');
     }
 
     public function uninstall()
@@ -137,27 +140,7 @@ class GrouponNode extends Module
                 ),
                 'input' => array(
                     array(
-                        'type' => 'switch',
-                        'label' => $this->l('Live mode'),
-                        'name' => 'GROUPONNODE_LIVE_MODE',
-                        'is_bool' => true,
-                        'desc' => $this->l('Enable or disable Groupon Module'),
-                        'values' => array(
-                            array(
-                                'id' => 'active_on',
-                                'value' => true,
-                                'label' => $this->l('Enabled')
-                            ),
-                            array(
-                                'id' => 'active_off',
-                                'value' => false,
-                                'label' => $this->l('Disabled')
-                            )
-                        ),
-                    ),
-                    array(
-                        'col' => 3,
-                        'type' => 'password',
+                        'type' => 'text',
                         'desc' => $this->l('Enter the token from Groupon'),
                         'name' => 'GROUPON_TOKEN',
                         'label' => $this->l('TOKEN'),
@@ -211,6 +194,16 @@ class GrouponNode extends Module
         }
     }
 
+    public function hookActionOrderStatusPostUpdate($params)
+    {
+        //$params['newOrderStatus'] // after status changed
+        //$params['orderStatus'] // after order is placed
+        if($idOrder->payment=="Groupon"&&$params['newOrderStatus']==4){
+            $idOrder = $params["id_order"];
+            $utility = new GrouponUtility();
+            $utility->UpdateOrder($idOrder);
+        }
+    }
     /**
      * Add the CSS & JavaScript files you want to be added on the FO.
      */

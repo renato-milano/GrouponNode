@@ -15,24 +15,16 @@ corriere: glsit
 
 */
    // requires PHP cURL http://no.php.net/curl
+   
+   $tracking="";
+   $fulfillment_lineitem_id="";
+
    $datatopost = array (
     "supplier_id" => "45022",
     "token" => "n32NXEKf6nIrFLIB4CgaIl6kjczEer8",
     "tracking_info" => '[
-{ "carrier" : "glsit", "fulfillment_lineitem_id" : "1178481615", "tracking" : "NN634766687"},
-{ "quantity" : 1, "carrier" : "glsit", "fulfillment_lineitem_id" : "1178481615", "tracking" : "NN634766687"},
-{ "carrier" : "glsit", "fulfillment_lineitem_id" : "1178480390", "tracking" : "NN634766689"},
-{ "quantity" : 1, "carrier" : "glsit", "fulfillment_lineitem_id" : "1178480390", "tracking" : "NN634766689"},
-{ "carrier" : "glsit", "fulfillment_lineitem_id" : "1178480169", "tracking" : "NN634766688"},
-{ "quantity" : 1, "carrier" : "glsit", "fulfillment_lineitem_id" : "1178480169", "tracking" : "NN634766688"},
-{ "carrier" : "glsit", "fulfillment_lineitem_id" : "1178479764", "tracking" : "NN634766690"},
-{ "quantity" : 1, "carrier" : "glsit", "fulfillment_lineitem_id" : "1178479764", "tracking" : "NN634766690"},
-{ "carrier" : "glsit", "fulfillment_lineitem_id" : "1178479416", "tracking" : "NN634766596"},
-{ "quantity" : 1, "carrier" : "glsit", "fulfillment_lineitem_id" : "1178479416", "tracking" : "NN634766596"},
-{ "carrier" : "glsit", "fulfillment_lineitem_id" : "1178478204", "tracking" : "NN634766691"},
-{ "quantity" : 1, "carrier" : "glsit", "fulfillment_lineitem_id" : "1178478204", "tracking" : "NN634766691"},
-{ "carrier" : "glsit", "fulfillment_lineitem_id" : "1178478032", "tracking" : "NN634766693"},
-{ "quantity" : 1, "carrier" : "glsit", "fulfillment_lineitem_id" : "1178478032", "tracking" : "NN634766693"}
+{ "carrier" : "glsit", "fulfillment_lineitem_id" : "'.$fulfillment_lineitem_id.'", "tracking" : "'.$tracking.'"},
+{ "quantity" : 1, "carrier" : "glsit", "fulfillment_lineitem_id" : "'.$fulfillment_lineitem_id.'", "tracking" : "'.$tracking.'"}
 ]'
  );
  

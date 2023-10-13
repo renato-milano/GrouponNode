@@ -3,7 +3,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', 'on');
 require_once dirname(__FILE__).'/../../../config/config.inc.php';
 require_once dirname(__FILE__).'/../../../init.php';
-
+require_once dirname(__FILE__).'/GrouponUtility.php';
+$utility = new GrouponUtility();
  /*   // Create user for orders imported from this module.
     $new_customer = new Customer();
     $new_customer->email = 'test@test.com';
@@ -52,8 +53,8 @@ require_once dirname(__FILE__).'/../../../init.php';
 case 'ImportOrdini':
     $supplierID = Configuration::get('GROUPON_SUPPLIER_ID');
     $token = Configuration::get('GROUPON_TOKEN');
-    //$response = file_get_contents ( 'https://scm.commerceinterface.com/api/v4/get_orders?supplier_id='.$supplierID.'&token='.$token );
-    $response = file_get_contents ('ResponseText.json');
+    $response = file_get_contents ( 'https://scm.commerceinterface.com/api/v4/get_orders?supplier_id='.$supplierID.'&token='.$token );
+    //$response = file_get_contents ('ResponseText.json');
     if( $response ) {
        $response_json = json_decode ( $response );
       // echo $response;
@@ -76,7 +77,6 @@ case 'ImportOrdini':
     $new_customer->passwd = 'no password';
     $new_customer->add();
     $id_customer = $new_customer->id;
-    echo 'Customer Creato '.$value->orderid;
     // Create delivery address.
     $new_address = new Address();
     $new_address->alias = 'Nessuno';
@@ -100,7 +100,6 @@ case 'ImportOrdini':
     $new_address->add();
     $id_address = $new_address->id;
  
-    echo 'Indirizzo di Sped. '.$value->orderid;
     $new_billing_address = new Address();
     $new_billing_address->alias = 'Nessuno';
     $new_billing_address->firstname = $cognome;
@@ -115,7 +114,6 @@ case 'ImportOrdini':
     $new_billing_address->address2 = $value->customer->billing_address->address2;
     $new_billing_address->add();
     $id_billing_address = $new_billing_address->id;
-    echo 'Indirizzo di Fatt. '.$value->orderid;
     // Cart information
     $new_cart = new Cart();
     $new_cart->id_customer = $new_customer->id;
@@ -126,13 +124,11 @@ case 'ImportOrdini':
     $new_cart->id_carrier = 1;
    
     $new_cart->add();
-    echo 'Carrello. '.$value->orderid;
     // Add the products to the cart
     foreach($value->line_items as $item){
       //echo $item->bom_sku;
     $result = $new_cart->updateQty($item->quantity,Product::getIdByReference($item->bom_sku)); // Adding Products to cart
     }
-    echo 'Prodotti inseeriti '.$value->orderid;
     // Creating order from cart
     $payment_module = Module::getInstanceByName('ps_wirepayment');
     $result = $payment_module->validateOrder($new_cart->id, Configuration::get('PS_OS_BANKWIRE'), $new_cart->getOrderTotal(), 'Groupon', 'Test');
@@ -143,7 +139,11 @@ case 'ImportOrdini':
     $history = new OrderHistory();
     $history->id_order = $id_order;
     $history->changeIdOrderState(2, $id_order);
-    //echo 'Ordine Importato: '.$value->orderid.'<br>';
+
+    foreach($value->line_items as $item){
+      $utility->insertOrder($id_order,$item->fulfillment_lineitem_id);
+      echo 'INSERITO ORDINE: '.$id_order;
+    }
           }
          
        } else {
@@ -152,6 +152,13 @@ case 'ImportOrdini':
     }
 break;
 case 'SendTracking':
+
+  $sql = 'SELECT value FROM `grouponnode` WHERE grouponnode.order="'.$_GET['orderID'].'"';
+
+$rq = Db::getInstance()->executeS($sql);
+foreach ($rq as $item) {
+  var_dump($item);
+}
     break;
 default:
     break;
