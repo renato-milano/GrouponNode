@@ -50,24 +50,45 @@ require_once dirname(__FILE__).'/../../../init.php';
     $new_order = new Order($id_order);*/
     switch (Tools::getValue('method')) {
 case 'ImportOrdini':
-    $response = file_get_contents ("ResponseText.json");
+    $supplierID = Configuration::get('GROUPON_SUPPLIER_ID');
+    $token = Configuration::get('GROUPON_TOKEN');
+    //$response = file_get_contents ( 'https://scm.commerceinterface.com/api/v4/get_orders?supplier_id='.$supplierID.'&token='.$token );
+    $response = file_get_contents ('ResponseText.json');
     if( $response ) {
        $response_json = json_decode ( $response );
+      // echo $response;
        if( $response_json->success == true ) {
+        // echo $response_json->success;
         foreach ($response_json->data as $value) {
+         echo '<br> Lavoro Ordine:  '.$value->orderid;
             $new_customer = new Customer();
     $new_customer->email = "ClienteGenerico@Groupon.com";
-    $new_customer->lastname = $value->customer->billing_address->name;
-    $new_customer->firstname = $value->customer->billing_address->name;
+    $value->customer->billing_address->name = str_replace("/","",$value->customer->billing_address->name);
+    $name = explode(" ",$value->customer->billing_address->name);
+    $i = 1;
+    $cognome = "";
+    while($i < count($name)){
+    $cognome .= " ".$name[$i];
+    $i = $i+1;
+                  }
+    $new_customer->lastname = $cognome;
+    $new_customer->firstname = $name[0];
     $new_customer->passwd = 'no password';
     $new_customer->add();
     $id_customer = $new_customer->id;
-
+    echo 'Customer Creato '.$value->orderid;
     // Create delivery address.
     $new_address = new Address();
     $new_address->alias = 'Nessuno';
-    $new_address->firstname = $value->customer->name;
-    $new_address->lastname = $value->customer->name;
+    $ShipName= explode(" ", $value->customer->name);
+    $i = 1;
+    $cognome = "";
+    while($i < count($ShipName)){
+    $cognome .= " ".$ShipName[$i];
+    $i = $i+1;
+                  }
+    $new_address->firstname = $ShipName[0];
+    $new_address->lastname = $cognome;
     $new_address->city = $value->customer->city;
     $new_address->id_state = 0;
     $new_address->id_customer = $id_customer;
@@ -78,11 +99,12 @@ case 'ImportOrdini':
     $new_address->address2 = $value->customer->address2;
     $new_address->add();
     $id_address = $new_address->id;
-
+ 
+    echo 'Indirizzo di Sped. '.$value->orderid;
     $new_billing_address = new Address();
     $new_billing_address->alias = 'Nessuno';
-    $new_billing_address->firstname = $value->customer->billing_address->name;
-    $new_billing_address->lastname = $value->customer->billing_address->name;
+    $new_billing_address->firstname = $cognome;
+    $new_billing_address->lastname = $name[1];
     $new_billing_address->city = $value->customer->billing_address->city;
     $new_billing_address->id_state = 0;
     $new_billing_address->id_customer = $id_customer;
@@ -93,7 +115,7 @@ case 'ImportOrdini':
     $new_billing_address->address2 = $value->customer->billing_address->address2;
     $new_billing_address->add();
     $id_billing_address = $new_billing_address->id;
-
+    echo 'Indirizzo di Fatt. '.$value->orderid;
     // Cart information
     $new_cart = new Cart();
     $new_cart->id_customer = $new_customer->id;
@@ -102,13 +124,15 @@ case 'ImportOrdini':
     $new_cart->id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
     $new_cart->id_currency = 1;
     $new_cart->id_carrier = 1;
-
+   
     $new_cart->add();
-
+    echo 'Carrello. '.$value->orderid;
     // Add the products to the cart
     foreach($value->line_items as $item){
-    $result = $new_cart->updateQty($item->quantity,Product::getIdByReference($item->sku)); // Adding Products to cart
+      //echo $item->bom_sku;
+    $result = $new_cart->updateQty($item->quantity,Product::getIdByReference($item->bom_sku)); // Adding Products to cart
     }
+    echo 'Prodotti inseeriti '.$value->orderid;
     // Creating order from cart
     $payment_module = Module::getInstanceByName('ps_wirepayment');
     $result = $payment_module->validateOrder($new_cart->id, Configuration::get('PS_OS_BANKWIRE'), $new_cart->getOrderTotal(), 'Groupon', 'Test');
@@ -119,7 +143,7 @@ case 'ImportOrdini':
     $history = new OrderHistory();
     $history->id_order = $id_order;
     $history->changeIdOrderState(2, $id_order);
-    echo 'Ordine Importato: '.$value->orderid.'<br>';
+    //echo 'Ordine Importato: '.$value->orderid.'<br>';
           }
          
        } else {
@@ -127,6 +151,8 @@ case 'ImportOrdini':
        }
     }
 break;
+case 'SendTracking':
+    break;
 default:
     break;
 }
