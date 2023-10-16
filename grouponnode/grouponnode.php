@@ -198,11 +198,14 @@ class GrouponNode extends Module
     {
         //$params['newOrderStatus'] // after status changed
         //$params['orderStatus'] // after order is placed
-        if($idOrder->payment=="Groupon"&&$params['newOrderStatus']==4){
+        //if($idOrder->payment=="Groupon"&&$params['newOrderStatus']==4){
             $idOrder = $params["id_order"];
-            $utility = new GrouponUtility();
-            $utility->UpdateOrder($idOrder);
-        }
+            //$utility = new GrouponUtility();
+           //$utility->UpdateOrder($idOrder);
+           file_get_contents('http://www.iglm.store/modules/grouponnode/ajax/SendTracking.php?idOrder='.$idOrder);
+           //include(dirname(__FILE__).'/ajax/SendTracking.php?idOrder='.$idOrder);
+            
+        //}
     }
     /**
      * Add the CSS & JavaScript files you want to be added on the FO.

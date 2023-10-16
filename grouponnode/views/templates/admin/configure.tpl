@@ -63,7 +63,7 @@ $(document).ready(function() {
   $('#ImportButton').click(function () {
 	console.log("Click")
     $.ajax({
-        url:'http://127.0.0.1/prestashop/modules/grouponnode/controllers/ImportOrders.php',
+        url:'https://www.iglm.store/modules/grouponnode/controllers/ImportOrders.php',
         data: 'method=ImportOrdini',
         method:'GET',
         success:function(data) {
