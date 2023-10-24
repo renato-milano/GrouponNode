@@ -35,6 +35,9 @@ case 'ImportOrdini':
     $cognome .= " ".$name[$i];
     $i = $i+1;
                   }
+    if($cognome ==""){
+      $cognome= "GenericoGroupon";
+      }
     $new_customer->lastname = $cognome;
     $new_customer->firstname = $name[0];
     $new_customer->passwd = 'no password';
@@ -50,6 +53,9 @@ case 'ImportOrdini':
     $cognome .= " ".$ShipName[$i];
     $i = $i+1;
                   }
+    if($cognome ==""){
+      $cognome= "GenericoGroupon";
+    }
     $new_address->firstname = $ShipName[0];
     $new_address->lastname = $cognome;
     $new_address->city = $value->customer->city;
@@ -95,15 +101,17 @@ case 'ImportOrdini':
     $payment_module = Module::getInstanceByName('ps_wirepayment');
     $result = $payment_module->validateOrder($new_cart->id, Configuration::get('PS_OS_BANKWIRE'), $new_cart->getOrderTotal(), 'Groupon', 'Test');
     if(!$result){
-      echo 'ERRORE ORDINE! '.
+      echo 'ERRORE ORDINE! ';
       continue;
     }
+    
     // Get the order id after creating it from the cart.
     $id_order = Order::getOrderByCartId($new_cart->id);
     $new_order = new Order($id_order);
     $history = new OrderHistory();
     $history->id_order = $id_order;
     $history->changeIdOrderState(2, $id_order);
+    $utility->updateOrderPrice($id_order,$value->amount->total,$value->amount->shipping);
 
     foreach($value->line_items as $item){
       $utility->insertOrder($id_order,$item->fulfillment_lineitem_id,$item->quantity);

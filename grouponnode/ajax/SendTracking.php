@@ -7,6 +7,7 @@ header('Access-Control-Allow-Origin: *');
 header("Cache-Control: no-cache, must-revalidate");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
     $idOrder = Tools::getValue('idOrder');
+    $carrier = Tools::getValue('carrier');
     $supplierID = Configuration::get('GROUPON_SUPPLIER_ID');
     $token = Configuration::get('GROUPON_TOKEN');
 
@@ -17,8 +18,8 @@ header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
             "supplier_id" => $supplierID,
             "token" => $token,
             "tracking_info" => '[
-        { "carrier" : "glsit", "fulfillment_lineitem_id" : "'.$item["lineitem"].'", "tracking" : "'.$item["tracking_number"].'"},
-        { "quantity" : '.$item["quantity"].', "carrier" : "glsit", "fulfillment_lineitem_id" : "'.$item["lineitem"].'", "tracking" : "'.$item["tracking_number"].'"}
+        { "carrier" : "'.$carrier.'", "fulfillment_lineitem_id" : "'.$item["lineitem"].'", "tracking" : "'.$item["tracking_number"].'"},
+        { "quantity" : '.$item["quantity"].', "carrier" : "'.$carrier.'", "fulfillment_lineitem_id" : "'.$item["lineitem"].'", "tracking" : "'.$item["tracking_number"].'"}
         ]'
          );
  

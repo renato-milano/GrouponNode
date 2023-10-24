@@ -24,6 +24,27 @@ public function insertOrder($idOrder,$fulfillment_lineitem_id,$quantity){
     Db::getInstance()->execute($sql);
     }
 
+public function updateOrderPrice($idOrder, $amount,$ship){
+  $sql = 'UPDATE `ps_orders` SET `total_paid` = '.$amount.',`total_paid_tax_incl` = '.$amount.', `total_paid_real` = '.$amount.', `total_products_wt` = '.$amount.' WHERE `ps_orders`.`id_order` ='.$idOrder;
+  Db::getInstance()->execute($sql);
+  
+  $sql = 'UPDATE `ps_order_invoice` SET `total_paid_tax_incl` = '.$amount.', `total_products_wt` = '.$amount.' WHERE `ps_order_invoice`.`id_order` ='.$idOrder;
+  Db::getInstance()->execute($sql);
+  
+  $order = new Order($idOrder);
+  // Ottieni il riferimento dell'ordine
+  $riferimento_ordine = $order->reference;
+
+  $sql = 'UPDATE `ps_order_payment` SET `amount` = '.$amount.' WHERE `ps_order_payment`.`order_reference` ="'.$riferimento_ordine.'"';
+  Db::getInstance()->execute($sql);
+
+  $sql = 'UPDATE `ps_order_detail` SET `total_shipping_price_tax_incl` = '.$ship.', `total_shipping_price_tax_excl` = '.$ship.' WHERE `ps_order_detail`.`id_order_detail` ='.$idOrder;
+  Db::getInstance()->execute($sql);
+
+  $sql = 'UPDATE `ps_orders` SET `total_shipping` = '.$ship.', `total_shipping_tax_incl` = '.$ship.', `total_shipping_tax_excl` = '.$ship.' WHERE `ps_orders`.`id_order` ='.$idOrder;
+  Db::getInstance()->execute($sql);
+}
+
 public function UpdateOrder($idOrder){
     
     $supplierID = Configuration::get('GROUPON_SUPPLIER_ID');

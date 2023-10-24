@@ -28,7 +28,6 @@
 	<p>
 		<strong>{l s='Welcome to GrouponNode' mod='grouponnode'}</strong><br />
 		{l s='Use this module to connect your E-commerce to Groupon!' mod='grouponnode'}<br />
-		{l s='Made with <3 by Renato Milano' mod='grouponnode'}
 	</p>
 	<p>Made with &#10084; by <a target="_blank" href="https://github.com/renato-milano">Renato Milano</a> </p>
 	<br />

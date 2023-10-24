@@ -31,7 +31,7 @@
  */
 $sql = array();
 
-$sql[] = 'DROP TABLE `' . _DB_PREFIX_ . 'grouponnode`';
+$sql[] = 'DROP TABLE `grouponnode`';
 
 
 foreach ($sql as $query) {
